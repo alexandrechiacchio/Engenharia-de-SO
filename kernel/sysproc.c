@@ -46,7 +46,7 @@ sys_sbrk(void)
 
   if(argint(0, &n) < 0)
     return -1;
-  
+
   addr = myproc()->sz;
   if(growproc(n) < 0)
     return -1;
@@ -77,10 +77,27 @@ sys_sleep(void)
 
 
 #ifdef LAB_PGTBL
+// this function is to check if page tables were accessed
 int
 sys_pgaccess(void)
 {
-  // lab pgtbl: your code here.
+  char* buf;
+  argaddr(0, (uint64*)&buf);
+  int num_pages;
+  argint(1, &num_pages);
+  if(num_pages > 32){
+    return -1;
+  }
+  int* mskAddr;
+  argaddr(2, (uint64*)&mskAddr);
+  int ret;
+  for (int i = 0; i<num_pages; i++){
+    pte_t pte = walk(myproc()->pagetable, (uint64)buf + i*PGSIZE, 0);
+    if(pte & PTE_A){
+      ret |= 1 << i;
+    }
+  }
+  copyout(myproc()->pagetable, mskAddr, (char*)ret, sizeof(uint64));
   return 0;
 }
 #endif

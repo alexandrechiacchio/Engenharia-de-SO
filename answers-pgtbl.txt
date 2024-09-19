@@ -1,0 +1,6 @@
+Speed up system calls
+    Any system call that only reads information, like uptime.
+
+Print a page table
+    The last 10 digits of a PTE are flags, the last 5 are, in order, USER, EXECUTABLE, WRITABLE, READABLE, VALID.
+    By reading the last figits we can see the flags, like page 0 and 2 that has the 5 leftmost bits set to 1 so that probably text.

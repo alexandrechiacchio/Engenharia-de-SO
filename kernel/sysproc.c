@@ -76,7 +76,7 @@ sys_sleep(void)
 }
 
 
-#ifdef LAB_PGTBL
+// #ifdef LAB_PGTBL
 // this function is to check if page tables were accessed
 int
 sys_pgaccess(void)
@@ -88,19 +88,27 @@ sys_pgaccess(void)
   if(num_pages > 32){
     return -1;
   }
-  int* mskAddr;
-  argaddr(2, (uint64*)&mskAddr);
-  int ret;
+  uint64 abitsAddr;
+  argaddr(2, &abitsAddr);
+
+  unsigned int ret;
   for (int i = 0; i<num_pages; i++){
-    pte_t pte = walk(myproc()->pagetable, (uint64)buf + i*PGSIZE, 0);
-    if(pte & PTE_A){
+    pte_t* pte = walk(myproc()->pagetable, (uint64)&buf[PGSIZE * i], 0);
+    // if(i==0) vmprint(pte);
+    // printf("%d: pte: %p\n", i, pte);
+    if(*pte & PTE_A){
+      // printf("Accessed\n");
       ret |= 1 << i;
+    } else {
+      // printf("Not Accessed\n");
+      *pte &= ~PTE_A;
     }
   }
-  copyout(myproc()->pagetable, mskAddr, (char*)ret, sizeof(uint64));
+    // if (copyout(p->pagetable, user_sysinfo_addr, (char*)&sysinfo, sizeof(sysinfo)))
+  copyout(myproc()->pagetable, abitsAddr, (char*)&ret, sizeof(uint64));
   return 0;
 }
-#endif
+// #endif
 
 uint64
 sys_kill(void)

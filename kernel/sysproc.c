@@ -92,7 +92,7 @@ sys_pgaccess(void)
   argaddr(2, &abitsAddr);
 
   unsigned int ret;
-  for (int i = 0; i<num_pages; i++){
+  for (int i = 1; i<num_pages; i++){
     pte_t* pte = walk(myproc()->pagetable, (uint64)&buf[PGSIZE * i], 0);
     // if(i==0) vmprint(pte);
     // printf("%d: pte: %p\n", i, pte);
